@@ -256,3 +256,40 @@ static void rxDoneCallback(EasyLink_RxPacket * rxPacket, EasyLink_Status status)
         Event_post(radioOperationEventHandle, RADIO_EVENT_INVALID_PACKET_RECEIVED);
     }
 }
+
+
+/* This Func is called by a Event_Handle posted by UART callback */
+void RF_RedoReceiveAsync(void)
+{
+    EasyLink_Status status = EasyLink_Status_Success;
+	
+    status = EasyLink_abort();
+    if (status == EasyLink_Status_Success) {
+        #if DEBUG_433 > 0
+        print_s("abort ok\r\n");
+        #endif
+    } else {
+        #if DEBUG_433 > 0
+        print_s("abort err\r\n");
+        print_8(status);
+        #endif
+        return FALSE;
+    }
+	
+	EasyLink_Free();
+
+    status = EasyLink_receiveAsync(rxDoneCallback, 0);
+    if (status == EasyLink_Status_Success) {
+        #if DEBUG_433 > 0
+        print_s("receiveAsync ok\r\n");
+        #endif
+        return TRUE;
+    } else {
+        #if DEBUG_433 > 0
+        print_s("receiveAsync err\r\n");
+        print_8(status);
+        #endif
+        return FALSE;
+    }
+    return TRUE;
+}

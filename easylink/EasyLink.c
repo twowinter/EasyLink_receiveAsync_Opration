@@ -1155,3 +1155,9 @@ EasyLink_Status EasyLink_getIeeeAddr(uint8_t *ieeeAddr)
 
     return status;
 }
+
+void EasyLink_Free(void)
+{
+    Semaphore_post(busyMutex);
+    asyncCmdHndl = EASYLINK_RF_CMD_HANDLE_INVALID;
+}
